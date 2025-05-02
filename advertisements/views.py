@@ -21,11 +21,14 @@ class IsOwnerOrReadOnly(BasePermission):
 class AdvertisementViewSet(ModelViewSet):
     queryset = Advertisement.objects.all()
     serializer_class = AdvertisementSerializer
-    permission_classes =[IsAuthenticated, IsOwnerOrReadOnly]
+    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
     filter_backends = [DjangoFilterBackend]
     filterset_class = AdvertisementFilter
 
     def get_permissions(self):
-        if self.action in ["create", "update", "partial_update"]:
+        if self.action in ["create", "update", "partial_update", "destroy"]:
+            return [IsAuthenticated(), IsOwnerOrReadOnly()]
+        elif self.action in ["list", "retrieve"]:
+            return []
+        else:
             return [IsAuthenticated()]
-        return []
